@@ -154,6 +154,39 @@ controller.hears(['what is my name','who am i'],'direct_message,direct_mention,m
     });
 });
 
+controller.hears(['is jim a hippie'],'direct_message,direct_mention,mention',function(bot, message) {
+
+    controller.storage.users.get(message.user,function(err, user) {
+        if (user && user.name) {
+            bot.reply(message,'Yes, an angry one ' + user.name);
+        } else {
+            bot.reply(message,'Very much so.');
+        }
+    });
+});
+
+controller.hears(['do you agree'],'direct_message,direct_mention,mention',function(bot, message) {
+
+    controller.storage.users.get(message.user,function(err, user) {
+        if (user && user.name) {
+            bot.reply(message,'Yes ' + user.name);
+        } else {
+            bot.reply(message,'Yep.');
+        }
+    });
+});
+
+controller.hears(['do you like the nationals'],'direct_message,direct_mention,mention',function(bot, message) {
+
+    controller.storage.users.get(message.user,function(err, user) {
+        if (user && user.name) {
+            bot.reply(message,'No, ' + user.name, 'but this guy does.', 'http://farm5.static.flickr.com/4077/4771789326_04b71c12f4_m.jpg');
+        } else {
+            bot.reply(message,'Yep.');
+        }
+    });
+});
+
 controller.hears(['what is a mearse'],'direct_message,direct_mention,mention',function(bot, message) {
 
     controller.storage.users.get(message.user,function(err, user) {
