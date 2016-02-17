@@ -1,1 +1,1 @@
-web: token=xoxb-21697399397-CGOUh8lboiuCxNTfKNMuaabv node bot.js
+web: node bot.js
