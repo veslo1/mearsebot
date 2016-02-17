@@ -1,1 +1,1 @@
-web: node bot.js
+web: token=$SLACK_TOKEN node bot.js
