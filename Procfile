@@ -1,1 +1,1 @@
-web: token=$SLACK_TOKEN node bot.js
+web: npm start
