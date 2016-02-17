@@ -198,7 +198,6 @@ controller.hears(['boobies'],'direct_message,direct_mention,mention',function(bo
     });
 });
 
-
 controller.hears(['what is a mearse'],'direct_message,direct_mention,mention',function(bot, message) {
 
     controller.storage.users.get(message.user,function(err, user) {
