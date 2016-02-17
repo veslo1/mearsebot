@@ -187,6 +187,18 @@ controller.hears(['do you like the nationals'],'direct_message,direct_mention,me
     });
 });
 
+controller.hears(['boobies'],'direct_message,direct_mention,mention',function(bot, message) {
+
+    controller.storage.users.get(message.user,function(err, user) {
+        if (user && user.name) {
+            bot.reply(message,'http://49.media.tumblr.com/5c65a542b9af21ad65a30a11c9ea40db/tumblr_o237guI7Pm1qbs5lqo1_500.gif');
+        } else {
+            bot.reply(message,'http://49.media.tumblr.com/5c65a542b9af21ad65a30a11c9ea40db/tumblr_o237guI7Pm1qbs5lqo1_500.gif');
+        }
+    });
+});
+
+
 controller.hears(['what is a mearse'],'direct_message,direct_mention,mention',function(bot, message) {
 
     controller.storage.users.get(message.user,function(err, user) {
