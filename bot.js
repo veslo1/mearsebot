@@ -74,6 +74,7 @@ var os = require('os');
 
 var controller = Botkit.slackbot({
     debug: true,
+    port: process.env.PORT || 5000
 });
 
 var bot = controller.spawn({
