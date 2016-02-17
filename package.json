@@ -21,7 +21,8 @@
   },
   "scripts": {
     "pretest": "jscs ./lib/",
-    "test": "mocha tests/*.js"
+    "test": "mocha tests/*.js",
+    "start": "token=$SLACK_TOKEN node bot.js"
   },
   "repository": {
     "type": "git",
