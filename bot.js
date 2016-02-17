@@ -180,9 +180,9 @@ controller.hears(['do you like the nationals'],'direct_message,direct_mention,me
 
     controller.storage.users.get(message.user,function(err, user) {
         if (user && user.name) {
-            bot.reply(message,'No, ' + user.name, 'but this guy does.', 'http://farm5.static.flickr.com/4077/4771789326_04b71c12f4_m.jpg');
+            bot.reply(message,'No, ' + user.name + ' but this guy does. ' + 'http://farm5.static.flickr.com/4077/4771789326_04b71c12f4_m.jpg');
         } else {
-            bot.reply(message,'Yep.', 'but not as much as this guy. ', 'http://farm5.static.flickr.com/4077/4771789326_04b71c12f4_m.jpg');
+            bot.reply(message,'Yep.' + 'But not as much as this guy. ' + 'http://farm5.static.flickr.com/4077/4771789326_04b71c12f4_m.jpg');
         }
     });
 });
