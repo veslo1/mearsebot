@@ -4,11 +4,21 @@
 var utils = require('./lib/utils.js');
 
 function hears(controller){
-    controller.hears(['what do you think about (.*)'], 'direct_message,direct_mention,mention', function(bot, message){
-        var matches = message.text.match(/what do you think about (.*)/i);
-        var name = matches[1];
-        var adjective = utils.randomPicker(['blows', 'rocks', 'is so so' , 'rules']);
-        bot.reply(message, name + ' ' + adjective);
+    controller.hears(['what do you think (about|of) (.*)(\\?|$)'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
+        var matches = message.text.match(/what do you think (about|of) (.*)(\\?|$)/i);
+        var noun = matches[2];
+        console.log(matches);
+        var adjective = '';
+        if(/(.*)s$/.test(noun)){
+            adjective = utils.randomPicker(['blow', 'rock', 'are so so' , 'rule', 'oh!, sat dudge!', 'are great']);
+        } else {
+            adjective = utils.randomPicker(['blows', 'rocks', 'is so so' , 'rules', 'oh!, sat dudge!', 'is great']);
+        }
+        bot.reply(message, noun + ' ' + adjective);
+    });
+
+    controller.hears(['highly'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
+        bot.reply(message, 'HIGHLY intelligent!');
     });
 
     controller.hears(['you suck mearsebot', 'why do you suck so much mearsebot'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
