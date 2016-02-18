@@ -3,6 +3,7 @@
 
 var utils = require('./lib/utils.js');
 var tumblrWrapper = require('./tumblrWrapper');
+var http = require('http');
 
 //tumblrWrapper.nipslip(function(err, photo){
 //    if(err) {
@@ -210,6 +211,37 @@ function hears(controller){
 
     });
 
+    controller.hears(['starwars (.*)'],'direct_message,direct_mention',function(bot,message) {
+
+        var searchTerm = message.text.match(/starwars (.*)/i)[1];
+
+        http.get('http://starwars.wikia.com/api/v1/Search/List?query='+ searchTerm +'&limit=1&minArticleQuality=10&batch=1&namespaces=0%2C14', function(res) {
+            if (res.statusCode !== 200) {
+                bot.reply(message, "Sorry, couldn't find anything about that. :confused:");
+            } else {
+                var body = "";
+                res.on('data', function(chunk) {
+                    body += chunk;
+                });
+                res.on('end',function() {
+                    var firstResult = JSON.parse(body).items[0];
+                    if (firstResult !== null) {
+                        if (firstResult.quality > 75) {
+                            bot.reply(message, "Got it! :grin:\r\n" + firstResult.url);
+                        }
+                        else {
+                            bot.reply(message, "Is this what you're after? " + firstResult.url + ' :thinking_face:');
+                        }
+                    }
+                    else {
+                        bot.reply(message, "Sorry, couldn't find anything about " + searchTerm + ' :confused:');
+                    }
+                });
+            }
+        }).on('error', function(e) {
+            console.log("error: ", e);
+        });
+    });
 }
 
 module.exports =  hears;
