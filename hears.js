@@ -2,10 +2,21 @@
 // all the things mearsebot can hear
 
 var utils = require('./lib/utils.js');
+var tumblrWrapper = require('./tumblrWrapper');
+
+//tumblrWrapper.nipslip(function(err, photo){
+//    if(err) {
+//        console.log('err', err);
+//    } else {
+//        console.log('data',  photo);
+//
+//    }
+//});
+
 
 function hears(controller){
     controller.hears(['what do you think (about|of) (.*)(\\?|$)'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
-        var matches = message.text.match(/what do you think (about|of) (.*)(\\?|$)/i);
+        var matches = message.text.match(/what do you think (about|of) (.*)(\\?$|$)/i);
         var noun = matches[2];
         console.log(matches);
         var adjective = '';
@@ -15,6 +26,20 @@ function hears(controller){
             adjective = utils.randomPicker(['blows', 'rocks', 'is so so' , 'rules', 'oh!, sat dudge!', 'is great']);
         }
         bot.reply(message, noun + ' ' + adjective);
+    });
+
+    controller.hears(['nipslip'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
+
+        tumblrWrapper.nipslip(function(err, photo){
+            if(err) {
+                console.log('err', err);
+                bot.reply(message, 'whoops!');
+            } else {
+                console.log('data',  photo);
+                bot.reply(message, photo + ' whoops!');
+            }
+        });
+
     });
 
     controller.hears(['highly'], 'ambient,direct_message,direct_mention,mention', function(bot, message){

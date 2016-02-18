@@ -121,10 +121,10 @@ setInterval(function(){
         if (!error && response.statusCode == 200) {
             console.log('mearsebot keepalive: ', body);
             if(webhookOptions.url) {
-                bot.sendWebhook({
-                    text: 'I\'m awake... barely.',
-                    channel: '#mearsebot_testing'
-                });
+                //bot.sendWebhook({
+                //    text: 'I\'m awake... barely.',
+                //    channel: '#mearsebot_testing'
+                //});
             }
         }
     });
