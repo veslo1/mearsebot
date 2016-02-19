@@ -4,17 +4,16 @@
 var utils = require('./lib/utils.js');
 var tumblrWrapper = require('./tumblrWrapper');
 var http = require('http');
+var Personas = require('./Personas');
 
-//tumblrWrapper.nipslip(function(err, photo){
-//    if(err) {
-//        console.log('err', err);
-//    } else {
-//        console.log('data',  photo);
-//
-//    }
-//});
+// init personas
+var Persona = new Personas({});
+Persona.init(function(err){
+    if (err) throw err;
+    console.log('Personas initialized', Persona.getPersonas());
+});
 
-
+// all the hears go here
 function hears(controller){
     controller.hears(['what do you think (about|of) (.*)(\\?|$)'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
         var matches = message.text.match(/what do you think (about|of) (.*)(\\?$|$)/i);
@@ -241,6 +240,20 @@ function hears(controller){
         }).on('error', function(e) {
             console.log("error: ", e);
         });
+    });
+
+    controller.hears(['what would (.*) say'],'direct_message,direct_mention,mention',function(bot, message) {
+
+        var person = message.text.match(/what would (.*) say/i)[1];
+
+        if(Persona.getPersonas().length > 0 && Persona.getPersonas().indexOf(person) > -1){
+            Persona.getPersona(person, function(response){
+                var quote = utils.randomPicker(response);
+                console.log('saying quote', quote);
+                bot.reply(message, person + ' would say, "' + quote + '"');
+            });
+        }
+
     });
 }
 
