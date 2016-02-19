@@ -262,6 +262,13 @@ function hears(controller){
         bot.reply(message, response);
 
     });
+
+    controller.hears(['that shit?'],'direct_message,direct_mention,mention',function(bot, message) {
+
+        var response = utils.randomPicker(['Man, Fuck dat shit! :grin:']);
+        bot.reply(message, response);
+
+    });
 }
 
 module.exports =  hears;
