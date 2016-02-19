@@ -255,6 +255,13 @@ function hears(controller){
         }
 
     });
+
+    controller.hears(['wanna hang out', 'want to hang out'],'direct_message,direct_mention,mention',function(bot, message) {
+
+        var response = utils.randomPicker(['I\'m all set, thanks. :grin:', 'You go ahead with out me, pal :grin:', 'nah.', '...um.  not really']);
+        bot.reply(message, response);
+
+    });
 }
 
 module.exports =  hears;
