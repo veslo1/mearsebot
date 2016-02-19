@@ -28,7 +28,6 @@ function Personas(options) {
             })
         });
     }
-
 }
 
 Personas.prototype.addPersona = function addPersona(key, value) {
