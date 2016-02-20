@@ -70,7 +70,8 @@ if (!process.env.token) {
 }
 
 var Botkit = require('./lib/Botkit.js');
-var hears = require('./hears');
+var hears_etc = require('./hears/hearse_etc');
+var hears_math = require('./hears/hears_math');
 var http = require('http');
 var request = require('request');
 var os = require('os');
@@ -107,7 +108,8 @@ if(webhookOptions.url){
 
 
 //add all your hears here
-hears(controller);
+hears_etc(controller);
+hears_math(controller);
 
 // to keep heroku's free dyno awake
 http.createServer(function(request, response) {

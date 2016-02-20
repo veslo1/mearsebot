@@ -1,10 +1,10 @@
 // hears.js
 // all the things mearsebot can hear
 
-var utils = require('./lib/utils.js');
-var tumblrWrapper = require('./tumblrWrapper');
+var utils = require('../lib/utils.js');
+var tumblrWrapper = require('../lib/tumblrWrapper');
+var Personas = require('../personas');
 var http = require('http');
-var Personas = require('./Personas');
 
 // init personas
 var Persona = new Personas({});
