@@ -48,15 +48,24 @@ describe('hears math test', function(){
                 events = events.split(/\,/g);
             }
 
-            keywords.map(function(word){
-                console.log('re', test.match(new RegExp(word)));
-
-                if(test.match(new RegExp(word)) !== null){
-                    console.log('word', word);
-                    callback.apply(this, [bot, word]);
+            var match;
+            for (var k = 0; k < keywords.length; k++) {
+                var keyword = keywords[k];
+                for (var e = 0; e < events.length; e++) {
+                    (function(keyword) {
+                        mockController.on(events[e], function(bot, message) {
+                            if (message.text) {
+                                if (match = message.text.match(new RegExp(keyword, 'i'))) {
+                                    console.log('I HEARD ', keyword);
+                                    message.match = match;
+                                    cb.apply(this, [bot, message]);
+                                    return false;
+                                }
+                            }
+                        });
+                    })(keyword);
                 }
-
-            });
+            }
 
 
         };
