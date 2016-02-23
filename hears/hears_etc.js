@@ -139,6 +139,17 @@ function hears(controller){
         });
     });
 
+    controller.hears(['jim pics'],'direct_message,direct_mention,mention',function(bot, message) {
+
+        //https://www.flickr.com/photos/mearse/17174820938/
+        bot.reply(message,'Oh!' + utils.randomPicker(['https://www.flickr.com/photos/mearse/17174820938/',
+                'https://www.flickr.com/photos/mearse/5115627979/in/album-72157625117597071/',
+                'https://www.flickr.com/photos/mearse/3852283885/in/album-72157622006444189/' ,
+                'https://www.flickr.com/photos/mearse/3227988948/in/album-72157612995986646/']
+            ));
+        
+    });
+
     controller.hears(['what is a mearse'],'direct_message,direct_mention,mention',function(bot, message) {
 
         controller.storage.users.get(message.user,function(err, user) {
