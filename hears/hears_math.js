@@ -12,17 +12,19 @@ function hears(controller){
 
     controller.hears(['\\d(.*)\\d'],'direct_message,direct_mention,mention',function(bot, message) {
 
-        //var response = utils.randomPicker(['I\'m all set, thanks. :grin:', 'You go ahead with out me, pal :grin:', 'nah.', '...um.  not really']);
-        bot.reply(message, ':thinking_face: thinking mathy thoughts...');
+        var question = message.text.match(/(\d.*\d)/i)[0];
+        console.log('question:', question);
+        bot.reply(message, ':thinking_face: thinking mathy thoughts...' + question);
+        question = question.replace(/x/i, '*');
+        console.log('question:', question);
+        var answer = math.eval(question);
+        bot.reply(message, 'got it! ' + answer);
+        setTimeout(function(){
+
+        }, 3000);
 
     });
 
-    controller.hears(['that shit?'],'direct_message,direct_mention,mention',function(bot, message) {
-
-        var response = utils.randomPicker(['Man, Fuck dat shit! :grin:']);
-        bot.reply(message, response);
-
-    });
 }
 
 module.exports =  hears;

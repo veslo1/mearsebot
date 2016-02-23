@@ -15,6 +15,7 @@ Persona.init(function(err){
 
 // all the hears go here
 function hears(controller){
+
     controller.hears(['what do you think (about|of) (.*)(\\?|$)'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
         var matches = message.text.match(/what do you think (about|of) (.*)(\\?$|$)/i);
         var noun = matches[2];
@@ -26,20 +27,6 @@ function hears(controller){
             adjective = utils.randomPicker(['blows', 'rocks', 'is so so' , 'rules', 'oh!, sat dudge!', 'is great']);
         }
         bot.reply(message, noun + ' ' + adjective);
-    });
-
-    controller.hears(['nipslip'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
-
-        tumblrWrapper.nipslip(function(err, photo){
-            if(err) {
-                console.log('err', err);
-                bot.reply(message, 'whoops!');
-            } else {
-                console.log('data',  photo);
-                bot.reply(message, photo + ' whoops!');
-            }
-        });
-
     });
 
     controller.hears(['highly'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
@@ -152,17 +139,6 @@ function hears(controller){
         });
     });
 
-    controller.hears(['boobies'],'direct_message,direct_mention,mention',function(bot, message) {
-
-        controller.storage.users.get(message.user,function(err, user) {
-            if (user && user.name) {
-                bot.reply(message,'http://49.media.tumblr.com/5c65a542b9af21ad65a30a11c9ea40db/tumblr_o237guI7Pm1qbs5lqo1_500.gif');
-            } else {
-                bot.reply(message,'http://49.media.tumblr.com/5c65a542b9af21ad65a30a11c9ea40db/tumblr_o237guI7Pm1qbs5lqo1_500.gif');
-            }
-        });
-    });
-
     controller.hears(['what is a mearse'],'direct_message,direct_mention,mention',function(bot, message) {
 
         controller.storage.users.get(message.user,function(err, user) {
@@ -269,6 +245,7 @@ function hears(controller){
         bot.reply(message, response);
 
     });
+
 }
 
 module.exports =  hears;

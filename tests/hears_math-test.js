@@ -8,6 +8,7 @@ var assert = require('assert');
 describe('hears math test', function(){
 
     var hearsMath = require('../hears/hears_math');
+    var hearsHotpads = require('../hears/hears_hotpads');
 
     function MockController(){
         // Super constructor
@@ -18,20 +19,12 @@ describe('hears math test', function(){
 
     util.inherits(MockController, EventEmitter);
 
-    //mock bot reply
-    var bot = {
-        reply: function(message, reply){
-            console.log('bot reply', reply);
-
-        }
-    };
-
     //mock controller instance
     var mockController = new MockController();
 
     //mock on
     mockController.on = function(event, cb) {
-        console.log('Setting up a handler for', event, cb);
+        //console.log('Setting up a handler for', event, cb);
         var events = (typeof(event) === 'string') ? event.split(/\,/g) : event;
 
         for (var e in events) {
@@ -82,8 +75,6 @@ describe('hears math test', function(){
 
     it('should hear a natural math expression', function(){
 
-
-
         hearsMath(mockController);
 
         sinon.spy(bot, 'reply');
@@ -93,6 +84,30 @@ describe('hears math test', function(){
         assert(bot.reply.calledOnce);
 
         bot.reply.restore();
+
+
+    });
+
+    it.only('should list hotpads apartments', function(done){
+
+        //mock bot reply
+        var bot = {
+            reply: function(message, reply){
+                console.log('bot reply', reply);
+                done();
+
+            }
+        };
+
+        hearsHotpads(mockController);
+
+        //sinon.spy(bot, 'reply');
+
+        mockController.events['direct_mention'][0].apply(null, [bot, {text: 'list apartments'}]);
+
+        //assert(bot.reply.calledOnce);
+
+        //bot.reply.restore();
 
 
     });
