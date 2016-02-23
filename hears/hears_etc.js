@@ -147,7 +147,7 @@ function hears(controller){
                 'https://www.flickr.com/photos/mearse/3852283885/in/album-72157622006444189/' ,
                 'https://www.flickr.com/photos/mearse/3227988948/in/album-72157612995986646/']
             ));
-        
+
     });
 
     controller.hears(['what is a mearse'],'direct_message,direct_mention,mention',function(bot, message) {

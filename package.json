@@ -7,6 +7,7 @@
     "axios": "^0.9.1",
     "body-parser": "^1.14.2",
     "express": "^4.13.3",
+    "flickrapi": "^0.4.1",
     "http": "0.0.0",
     "jfs": "^0.2.6",
     "lodash": "^4.5.1",
