@@ -29,6 +29,10 @@ function hears(controller){
         bot.reply(message, noun + ' ' + adjective);
     });
 
+    controller.hears(['thanks'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
+        bot.reply(message, utils.randomPicker(['np', 'word', 'you got it', 'no problemo, amigo', 'high five!']));
+    });
+
     controller.hears(['highly'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
         bot.reply(message, 'HIGHLY intelligent!');
     });

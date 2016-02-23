@@ -30,6 +30,10 @@ function hears(controller){
 
     });
 
+    controller.hears(['how large and hairless is kenny\'s scrotum'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
+        bot.reply(message, 'UUUUUuugge!' + 'https://www.youtube.com/watch?v=3I8VQYgR8Kk' )
+    });
+
     controller.hears(['boobies'],'direct_message,direct_mention,mention',function(bot, message) {
 
         controller.storage.users.get(message.user,function(err, user) {

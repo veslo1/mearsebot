@@ -18,6 +18,9 @@ var Summary = require('../hotpads/Summary');
 function hears(controller){
 
     //console.log(controller.hears());
+    controller.hears(['help me find a place'], 'direct_message,direct_mention,mention', function(bot, message){
+
+    });
 
     controller.hears([
         'list apartments',
