@@ -17,8 +17,75 @@ var Summary = require('../hotpads/Summary');
 // all the hears go here
 function hears(controller){
 
-    //console.log(controller.hears());
-    controller.hears(['help me find a place'], 'direct_message,direct_mention,mention', function(bot, message){
+    controller.hears(['zillow (.*)'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
+        var matches = message.text.match(/zillow (.*)/i);
+        var name = matches[1];
+        bot.reply(message, 'https://www.google.com/#q=zillow+' + name);
+    });
+
+    controller.hears(['how much are places in (.*)'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
+        bot.say(message, 'lemme find out...');
+    });
+
+    controller.hears(['find a place', 'help me find a place'], 'direct_message,direct_mention,mention', function(bot, message){
+
+
+        // start a conversation to handle this response.
+        bot.startConversation(message,function(err,convo) {
+
+            convo.sayFirst({
+                'username': 'HotBot' ,
+                'text': 'Find your next place',
+                'attachments': [
+                    {
+                        'title': 'Alright,',
+                        'text': ' Lets find your next place!',
+                        'color': '#7CD197'
+                    }
+                ],
+                'icon_url': 'https://nodes3cdn.hotpads.com/dist/images/hotpads-logo-horizontal-4678be93ca.png'
+            });
+
+            convo.ask('Mind if I ask you a few questions to start? Say yes(ya), no(nah) or done to quit.',[
+                {
+                    pattern: 'done',
+                    callback: function(response,convo) {
+                        convo.say('OK you are done!');
+                        convo.next();
+                    }
+                },
+                {
+                    pattern: bot.utterances.yes,
+                    callback: function(response,convo) {
+                        convo.say('Great! I will continue...');
+                        // do something else...
+                        convo.next();
+
+                    }
+                },
+                {
+                    pattern: bot.utterances.no,
+                    callback: function(response,convo) {
+                        convo.say('Perhaps later.');
+                        // do something else...
+                        convo.next();
+                    }
+                },
+                {
+                    default: true,
+                    callback: function(response,convo) {
+                        // just repeat the question
+                        convo.repeat();
+                        convo.next();
+                    }
+                }
+            ]);
+
+        })
+
+
+
+
 
     });
 

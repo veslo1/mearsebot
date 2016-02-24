@@ -30,7 +30,7 @@ function hears(controller){
 
     });
 
-    controller.hears(['how large and hairless is kenny\'s scrotum'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
+    controller.hears(['huge', 'how large and hairless is kenny\'s scrotum'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
         bot.reply(message, 'UUUUUuugge!' + 'https://www.youtube.com/watch?v=3I8VQYgR8Kk' )
     });
 

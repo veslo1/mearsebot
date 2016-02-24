@@ -33,8 +33,26 @@ function hears(controller){
         bot.reply(message, utils.randomPicker(['np', 'word', 'you got it', 'no problemo, amigo', 'high five!']));
     });
 
+    controller.hears(['google (.*)'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
+        var matches = message.text.match(/google (.*)/i);
+        var name = matches[1];
+            name = name.replace(/\s/ig, '+');
+
+        bot.reply(message, 'https://www.google.com/#q=' + name + '&btnI');
+    });
+
+    controller.hears(['cheer (.*) up'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
+        var matches = message.text.match(/cheer (.*) up/i);
+        var name = matches[1];
+        bot.reply(message, utils.randomPicker(['you da man, ' + name, 'you the man now, dog!']));
+    });
+
     controller.hears(['highly'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
         bot.reply(message, 'HIGHLY intelligent!');
+    });
+
+    controller.hears(['fault'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
+        bot.reply(message, 'ya, it was @cblu\'s fault...');
     });
 
     controller.hears(['you suck mearsebot', 'why do you suck so much mearsebot'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
