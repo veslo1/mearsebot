@@ -29,6 +29,14 @@ function hears(controller){
         bot.reply(message, noun + ' ' + adjective);
     });
 
+    controller.hears(['hi', 'hello'], 'direct_message,direct_mention,mention', function(bot, message){
+        bot.reply(message, utils.randomPicker(['hello world!', 'hi!', 'hola!']));
+    });
+
+    controller.hears(['it [g|d]oing', 'you doi[n|ng]'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
+        bot.reply(message, utils.randomPicker(['doin good.', 'aight', 'chillin...']));
+    });
+
     controller.hears(['thanks'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
         bot.reply(message, utils.randomPicker(['np', 'word', 'you got it', 'no problemo, amigo', 'high five!']));
     });

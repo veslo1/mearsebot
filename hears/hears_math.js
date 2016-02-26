@@ -10,7 +10,7 @@ function hears(controller){
 
     //console.log(controller.hears());
 
-    controller.hears(['\\d(.*)\\d'],'direct_message,direct_mention,mention',function(bot, message) {
+    controller.hears(['what is \\d(.*)\\d'],'direct_message,direct_mention,mention',function(bot, message) {
 
         var question = message.text.match(/(\d.*\d)/i)[0];
         console.log('question:', question);
