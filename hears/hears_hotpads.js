@@ -27,13 +27,18 @@ function hears(controller){
         bot.reply(message, 'https://www.google.com/#q=zillow+' + name + '&btnI');
     });
 
+    controller.hears(['sign me up'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
+
+        bot.reply(message, 'Got it!  I\'ll start sending you search alerts.');
+    });
+
     controller.hears(['help'], 'direct_message,direct_mention,mention', function(bot, message){
 
         var sentences = {
             intro: [
                 'Okay, let\'s help you find a place.',
                 'First off, where are we looking?',
-                'Say, san francisco or brooklyn, ny'
+                'Say, San Francisco or Brooklyn, NY'
             ],
             howMuch: [
                 'Okay, how much are we willing to spend?',
@@ -48,12 +53,149 @@ function hears(controller){
             ],
             results: [
                 'Here\'s some search results!'
+            ],
+            hmm: [
+                ':confused: Hmm, something went wrong...',
+                'Let\'s try again later.',
+                'http://hotpads.com'
+            ],
+            sorry: [
+                ':confused: Sorry, couldn\'t find any apartments.'
+            ],
+            tryAgain: [
+                'Wanna try again?'
+            ],
+                thatsAll: [
+                'Hmm, looks like that\'s all we got.'
+            ],
+            more: [
+                'Would you like to see more?',
+                'Say, yes, no, or a number less than 20.',
+                '...or done.'
+            ],
+            lemmeKnow: [
+                'Okay, I\'ll be here.',
+                'Just say "help me find a place"'
+            ],
+            done: [
+                'Okay, we\'re done.',
+                'If you need me again, just say:',
+                '"help me find a place"'
+            ],
+            great: [
+                'Great! Gimme a second to look for some places that match.'
+            ],
+            proceed: [
+                'Shall we proceed?',
+                'Say, yes, no or done to quit.'
             ]
         };
-
         var allListings = [];
+        var displayCount = 0;
+
+        function showPlaces(index, limit, convo) {
+            console.log('showPlaces+++++++++++++++++++++++', index, limit, convo.task.source_message);
+
+            index = index || displayCount;
+            limit = limit || index;
+
+            var responses = (((convo || {}).task || {}).source_message|| {}).responses;
+            if(typeof responses === 'undefined') {
+                console.log('responses are undefined');
+                convo.stop();
+                sorryResponse('hmm');
+                return false
+            }
+
+            if(index >= allListings.length - 1) {
+                console.log('index too high');
+                convo.stop();
+                sorryResponse('thatsAll');
+                return false
+            }
+
+            if(limit) {
+                limit = limit > allListings.length - 1 ? allListings.length : limit;
+                convo.say('Check these out.\n');
+                for(var i = index; i <= limit; i++){
+                    displayCount ++;
+                    convo.say((i + 1) + '. '+'http://hotpads.com' + allListings[i].uriBuilding + '?price=0-'+
+                        responses.price +'&beds=' + responses.beds );
+                }
+            } else {
+                displayCount++;
+                convo.say('Check this out.\n' + (index + 1) + '. ' + 'http://hotpads.com' +
+                    allListings[index].uriBuilding + '?price=0-'+ responses.price +'&beds=' + responses.beds );
+            }
+
+        }
+
+        function sorryResponse(type) {
+            type = type || 'sorry';
+
+            console.log('sorryResponse', type);
+
+            if (type === 'sorry' || type === 'thatsAll') {
+                console.log('trying again', type);
+                bot.reply(message, sentences[type].join('\n'));
+                bot.startConversation(message, tryAgain);
+            } else {
+                bot.reply(message, sentences[type].join('\n'));
+            }
+        }
+
+        function getPlaces(responses) {
+
+            console.log('getting places');
+            var where = responses.where;
+            message['responses'] = responses;
+
+            if(typeof where !== 'undefined') {
+                hotpadsWrapper.autoComplete(encodeURIComponent(where))
+                    .then(function(result){
+
+                        if(typeof result === 'undefined' || result.length === 0) {
+                            sorryResponse();
+                        } else {
+                            console.log('==========get places result', result[0]);
+                            var id = result[0].id;
+                            hotpadsWrapper.byAreaId(id)
+                                .then(function(areaObj){
+                                    if(typeof areaObj === 'undefined') {
+                                        sorryResponse();
+                                    } else {
+                                        console.log('area obj--------------', areaObj);
+                                        var params = {
+                                            minLat: areaObj.minLat,
+                                            minLon: areaObj.minLon,
+                                            maxLat: areaObj.maxLat,
+                                            maxLon: areaObj.maxLon,
+                                            price: responses.price,
+                                            beds: responses.beds
+                                        };
+                                        hotpadsWrapper.byCoords(params)
+                                            .then(function(listings){
+                                                if(typeof listings === 'undefined') {
+                                                    sorryResponse();
+                                                } else {
+                                                    allListings = listings;
+                                                    console.log('----------got listings', listings.length);
+                                                    bot.startConversation(message, showSearchResults);
+                                                }
+                                            });
+                                    }
+                                });
+                        }
+                    });
+            } else {
+                sorryResponse();
+            }
+
+        }
 
         var intro = function(response, convo) {
+
+            displayCount = 0;
 
             convo.on('end',function(convo) {
 
@@ -107,41 +249,30 @@ function hears(controller){
                 convo.extractResponse('beds')
             );
 
-            console.log('-------------where', answers);
-            var post = {
-                'username': 'hotbot',
-                'text': 'Okay!',
-                'attachments': [
-                    {
-                        'title': 'Here are your answers.',
-                        'text': answers,
-                        'color': '#7CD197'
-                    }
-                ]
-            };
-
-            convo.say(post);
+            convo.say('Here are your answers:\n' + answers);
             confirm(response, convo);
             convo.next();
 
         };
 
         var confirm = function(response, convo) {
-            convo.ask('Shall we proceed Say YES, NO or DONE to quit.',[
+            convo.ask(sentences.proceed.join('\n'),[
                 {
                     pattern: 'done',
                     callback: function(response,convo) {
-                        convo.say('OK you are done!');
+                        convo.say(sentences.done.join('\n'));
                         convo.next();
                     }
                 },
                 {
                     pattern: bot.utterances.yes,
                     callback: function(response,convo) {
-                        convo.say('Great! Gimme a second to look for some places that match.');
+                        //convo.say(sentences.great.join('\n'));
                         getPlaces(convo.extractResponses());
                         convo.next();
+                        setTimeout(function(){
 
+                        }, 2000);
                     }
                 },
                 {
@@ -163,51 +294,94 @@ function hears(controller){
             ]);
         };
 
+        var showSearchResults = function(response, convo){
+            console.log("in search results", response);
+            bot.reply(message, 'I found ' + allListings.length + ' places.');
+            showPlaces(displayCount, null, convo);
 
-        var getPlaces = function(responses) {
-
-            console.log('getting places');
-            var where = responses.where;
-
-            if(typeof where !== 'undefined') {
-                hotpadsWrapper.autoComplete(encodeURIComponent(where))
-                    .then(function(result){
-
-                        console.log('==========get places result', result[0]);
-
-                        var id = result[0].id;
-                        hotpadsWrapper.byAreaId(id)
-                            .then(function(areaObj){
-                                console.log('area obj--------------', areaObj);
-                                var params = {
-                                    minLat: areaObj.minLat,
-                                    minLon: areaObj.minLon,
-                                    maxLat: areaObj.maxLat,
-                                    maxLon: areaObj.maxLon,
-                                    price: responses.price,
-                                    beds: responses.beds
-                                };
-                                hotpadsWrapper.byCoords(params)
-                                    .then(function(listings){
-                                        allListings = listings;
-                                        console.log('----------got listings', listings.length);
-                                        bot.startConversation(message, showHelpResults);
-                                    });
-                            });
-
-                    });
-            } else {
-                //say something
-            }
+            convo.ask(sentences.more.join('\n'),[
+                {
+                    pattern: 'done',
+                    callback: function(response,convo) {
+                        convo.say(sentences.done.join('\n'));
+                        convo.next();
+                    }
+                },
+                {
+                    pattern: '^(yes|yea|yup|yep|ya|sure|ok|y|yeah|yah)|more',
+                    callback: function(response,convo) {
+                        convo.say('Okay, here\'s a few more.');
+                        showPlaces(displayCount, (displayCount + 2), convo);
+                        if(displayCount <= allListings.length) {
+                            convo.repeat();
+                        }
+                        convo.next();
+                    }
+                },
+                {
+                    pattern: bot.utterances.no,
+                    callback: function(response,convo) {
+                        convo.say(sentences.lemmeKnow.join('\n'));
+                        // do something else...
+                        convo.next();
+                    }
+                },
+                {
+                    default: true,
+                    callback: function(response,convo) {
+                        // just repeat the question
+                        convo.repeat();
+                        convo.next();
+                    }
+                }
+            ]);
 
         };
 
-        var showHelpResults = function(response, convo){
-            console.log("in help results");
-            convo.say('Here\'s a result.\n' + 'http://hotpads.com' + allListings[0].uriBuilding);
+        var tryAgain = function(response, convo) {
+            convo.ask(sentences.tryAgain.join('\n'),[
+                {
+                    pattern: 'done',
+                    callback: function(response,convo) {
+                        convo.say('OK, done.');
+                        convo.next();
+                    }
+                },
+                {
+                    pattern: bot.utterances.yes,
+                    callback: function(response,convo) {
+                        convo.say('Great! let\'s try again...');
+                        bot.startConversation(message, intro);
+                        convo.next();
+
+                    }
+                },
+                {
+                    pattern: bot.utterances.no,
+                    callback: function(response,convo) {
+                        convo.say(sentences.lemmeKnow.join('\n'));
+                        convo.next();
+                    }
+                },
+                {
+                    default: true,
+                    callback: function(response,convo) {
+                        // just repeat the question
+                        convo.repeat();
+                        convo.next();
+                    }
+                }
+            ]);
         };
 
-        // start a conversation to handle this response.
+        /*
+            start an intro conversation to handle this response
+            intro > howMuch > beds > recap > confirm > getPlaces > showSearchResults
+            showSearchResults > done|no
+            showSearchResults > \d|yes|more > showMore
+
+        */
+
         bot.startConversation(message, intro);
 
 
@@ -233,7 +407,6 @@ function hears(controller){
                     });
 
                     var post = {
-                        'username': 'HotBot' ,
                         'text': 'OK, Here\'s some places matching ' + '"' + name + '"',
                         'attachments': [
                             {
@@ -245,7 +418,7 @@ function hears(controller){
 
                     bot.reply(message, post);
                 } else {
-                    bot.reply(message, 'Sorry, couldn\'t find any apartments that matched :confused:');
+                    sorryResponse()
                 }
 
             });
@@ -271,7 +444,7 @@ function hears(controller){
                     bot.reply(message, ':thinking_face: here\'s a couple listings...\n' +
                         hotpads + results[0].uriV2 + '\n' + hotpads + results[1].uriV2);
                 } else {
-                    bot.reply(message, 'Sorry, couldn\'t find any apartments that matched :confused:');
+                    sorryResponse();
                 }
             });
 

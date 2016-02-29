@@ -113,7 +113,7 @@ if(webhookOptions.url){
 //add all your hears here
 hears_etc(controller);
 hears_hotpads(controller);
-hears_nsfw(controller);
+//hears_nsfw(controller);
 hears_flickr(controller);
 hears_math(controller);
 
