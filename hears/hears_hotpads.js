@@ -13,8 +13,6 @@ var utils = require('../lib/utils.js');
 var hotpadsWrapper = require('../lib/hotpadsWrapper.js');
 var urljoin = require('url-join');
 var http = require('http');
-var axios = require('axios');
-var Summary = require('../hotpads/Summary');
 var hotpads = 'http://hotpads.com';
 
 // all the hears go here
@@ -27,9 +25,22 @@ function hears(controller){
         bot.reply(message, 'https://www.google.com/#q=zillow+' + name + '&btnI');
     });
 
+    controller.hears(['expensive listing'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
+        setTimeout(function(){
+            bot.reply(message, 'Whoa, check this out! https://hotpads.com/93-cumberland-st-san-francisco-ca-94110-wdmjpn/pad');
+        }, 1000);
+    });
+
     controller.hears(['sign me up'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
 
         bot.reply(message, 'Got it!  I\'ll start sending you search alerts.');
+
+    });
+
+    controller.hears(['you rock'], 'direct_message,direct_mention,mention', function(bot, message){
+
+        bot.reply(message, 'Hey, that\'s my job.');
+
     });
 
     controller.hears(['help'], 'direct_message,direct_mention,mention', function(bot, message){
@@ -94,12 +105,13 @@ function hears(controller){
         var displayCount = 0;
 
         function showPlaces(index, limit, convo) {
-            console.log('showPlaces+++++++++++++++++++++++', index, limit, convo.task.source_message);
+            console.log('showPlaces+++++++++++++++++++++++', index, limit,  util.inspect(convo, {depth: 3, colorize: true}));
 
             index = index || displayCount;
             limit = limit || index;
 
             var responses = (((convo || {}).task || {}).source_message|| {}).responses;
+
             if(typeof responses === 'undefined') {
                 console.log('responses are undefined');
                 convo.stop();
@@ -144,54 +156,6 @@ function hears(controller){
             }
         }
 
-        function getPlaces(responses) {
-
-            console.log('getting places');
-            var where = responses.where;
-            message['responses'] = responses;
-
-            if(typeof where !== 'undefined') {
-                hotpadsWrapper.autoComplete(encodeURIComponent(where))
-                    .then(function(result){
-
-                        if(typeof result === 'undefined' || result.length === 0) {
-                            sorryResponse();
-                        } else {
-                            console.log('==========get places result', result[0]);
-                            var id = result[0].id;
-                            hotpadsWrapper.byAreaId(id)
-                                .then(function(areaObj){
-                                    if(typeof areaObj === 'undefined') {
-                                        sorryResponse();
-                                    } else {
-                                        console.log('area obj--------------', areaObj);
-                                        var params = {
-                                            minLat: areaObj.minLat,
-                                            minLon: areaObj.minLon,
-                                            maxLat: areaObj.maxLat,
-                                            maxLon: areaObj.maxLon,
-                                            price: responses.price,
-                                            beds: responses.beds
-                                        };
-                                        hotpadsWrapper.byCoords(params)
-                                            .then(function(listings){
-                                                if(typeof listings === 'undefined') {
-                                                    sorryResponse();
-                                                } else {
-                                                    allListings = listings;
-                                                    console.log('----------got listings', listings.length);
-                                                    bot.startConversation(message, showSearchResults);
-                                                }
-                                            });
-                                    }
-                                });
-                        }
-                    });
-            } else {
-                sorryResponse();
-            }
-
-        }
 
         var intro = function(response, convo) {
 
@@ -268,11 +232,13 @@ function hears(controller){
                     pattern: bot.utterances.yes,
                     callback: function(response,convo) {
                         //convo.say(sentences.great.join('\n'));
-                        getPlaces(convo.extractResponses());
-                        convo.next();
-                        setTimeout(function(){
-
-                        }, 2000);
+                        hotpadsWrapper.getPlaces(convo.extractResponses(), sorryResponse)
+                            .then(function(listings){
+                                allListings = listings;
+                                console.log('----------got listings', listings.length);
+                                bot.startConversation(message, showSearchResults);
+                                convo.next();
+                            });
                     }
                 },
                 {
@@ -408,6 +374,45 @@ function hears(controller){
 
                     var post = {
                         'text': 'OK, Here\'s some places matching ' + '"' + name + '"',
+                        'attachments': [
+                            {
+                                'text': areas.join(''),
+                                'color': '#7CD197'
+                            }
+                        ]
+                    };
+
+                    bot.reply(message, post);
+                } else {
+                    sorryResponse()
+                }
+
+            });
+
+    });
+
+    //apartamentos para rentar en el
+    controller.hears(['[casa|apartamentos] para rentar en el (.*)'], 'direct_message,direct_mention,mention', function(bot, message){
+
+        console.log('whoohoo rentals in spanish');
+        var matches = message.text.match(/el (.*)/i);
+        var name = matches[1];
+
+        hotpadsWrapper.autoComplete(encodeURIComponent(name))
+            .then(function(suggestedAreas){
+
+                var areas = [];
+
+                if (typeof suggestedAreas !== 'undefined') {
+
+                    suggestedAreas.map(function(area) {
+                        //console.log('---------', hotpads, util.inspect(area, depth=3, colorize=true));
+                        areas.push('<' + urljoin(hotpads, area.resourceId, 'apartments-for-rent') + '|'+ area.name
+                            + ' , ' + area.city + ' , ' + area.state + '>\n');
+                    });
+
+                    var post = {
+                        'text': 'Hola!, He aquí algunos lugares' + '"' + name + '"',
                         'attachments': [
                             {
                                 'text': areas.join(''),

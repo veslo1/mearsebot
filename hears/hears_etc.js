@@ -30,7 +30,7 @@ function hears(controller){
     });
 
     controller.hears(['hi', 'hello'], 'direct_message,direct_mention,mention', function(bot, message){
-        bot.reply(message, utils.randomPicker(['hello world!', 'hi!', 'hola!']));
+        bot.reply(message, utils.randomPicker(['hello world!', 'hi!', 'hola!', 'yo!', 'howdy!']));
     });
 
     controller.hears(['it [g|d]oing', 'you doi[n|ng]'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
@@ -41,7 +41,7 @@ function hears(controller){
         bot.reply(message, utils.randomPicker(['np', 'word', 'you got it', 'no problemo, amigo', 'high five!']));
     });
 
-    controller.hears(['google (.*)'], 'ambient,direct_message,direct_mention,mention', function(bot, message){
+    controller.hears(['google (.*)'], 'direct_message,direct_mention,mention', function(bot, message){
         var matches = message.text.match(/google (.*)/i);
         var name = matches[1];
             name = name.replace(/\s/ig, '+');

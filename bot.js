@@ -72,7 +72,6 @@ if (!process.env.token) {
 var Botkit = require('./lib/Botkit.js');
 var hears_etc = require('./hears/hears_etc');
 var hears_math = require('./hears/hears_math');
-var hears_nsfw = require('./hears/hears_nsfw');
 var hears_flickr = require('./hears/hears_flickr');
 var hears_hotpads = require('./hears/hears_hotpads');
 var http = require('http');
@@ -113,7 +112,6 @@ if(webhookOptions.url){
 //add all your hears here
 hears_etc(controller);
 hears_hotpads(controller);
-//hears_nsfw(controller);
 hears_flickr(controller);
 hears_math(controller);
 
