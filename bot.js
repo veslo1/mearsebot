@@ -73,7 +73,9 @@ var Botkit = require('./lib/Botkit.js');
 var hears_etc = require('./hears/hears_etc');
 var hears_math = require('./hears/hears_math');
 var hears_flickr = require('./hears/hears_flickr');
+var hears_nsfw = require('./hears/hears_nsfw');
 var hears_hotpads = require('./hears/hears_hotpads');
+var hears_mlb = require('./hears/hears_mlb');
 var http = require('http');
 var request = require('request');
 var os = require('os');
@@ -115,6 +117,7 @@ hears_hotpads(controller);
 hears_flickr(controller);
 hears_nsfw(controller);
 hears_math(controller);
+hears_mlb(controller);
 
 // to keep heroku's free dyno awake
 http.createServer(function(request, response) {
