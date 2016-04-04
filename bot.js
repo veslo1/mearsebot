@@ -113,6 +113,7 @@ if(webhookOptions.url){
 hears_etc(controller);
 hears_hotpads(controller);
 hears_flickr(controller);
+hears_nsfw(controller);
 hears_math(controller);
 
 // to keep heroku's free dyno awake

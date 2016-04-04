@@ -63,7 +63,9 @@ Personas.prototype.getPersona = function getPersona(name, cb){
             throw err;
         }
         self.personas[name]['quotes'] = reply.toString().replace(/(\r\n|\n|\r)/gm,'').split('.') || false;
+        console.log('quotes', self.personas[name]['quotes']);
         //console.log('quotes', self.personas[name].quotes); // will print list of persona quotes
+        self.personas[name].quotes.pop();
         cb(self.personas[name].quotes);
 
     });
