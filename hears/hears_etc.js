@@ -29,7 +29,7 @@ function hears(controller){
         bot.reply(message, noun + ' ' + adjective);
     });
 
-    controller.hears(['hi', 'hello'], 'direct_message,direct_mention,mention', function(bot, message){
+    controller.hears(['^hi', '^hello'], 'direct_message,direct_mention,mention', function(bot, message){
         bot.reply(message, utils.randomPicker(['hello world!', 'hi!', 'hola!', 'yo!', 'howdy!']));
     });
 

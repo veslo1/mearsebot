@@ -85,6 +85,7 @@ function hears(controller){
                     callback: function(response, convo) {
                         convo.say('Stopping play by play for the ' + team);
                         clearInterval(pbp);
+                        convo.next();
                     }
                 },
                 {
@@ -103,7 +104,54 @@ function hears(controller){
 
     });
 
+    controller.hears(['chill'], 'direct_message,direct_mention,mention', function(bot, message){
 
+        var pbp;
+
+        var start = function(response, convo) {
+
+            convo.on('end',function(convo) {
+
+                var res = convo.extractResponses();
+                console.log('conversation end======================');
+
+                if (convo.status == 'completed') {
+                    clearInterval(pbp);
+                } else {
+                    // something happened that caused the conversation to stop prematurely
+                }
+
+            });
+
+            pbp = setInterval(function(){
+                bot.reply(message, 'chillin...');
+            }, 5000);
+
+            convo.ask('Okay, chillin... ', [
+
+                {
+                    pattern: 'stop',
+                    callback: function(response, convo) {
+                        convo.say('Stopping chillin.');
+                        clearInterval(pbp);
+                        convo.next();
+                    }
+                },
+                {
+                    default: true,
+                    callback: function(response,convo) {
+                        //convo.next();
+                    }
+                }
+            ]);
+        };
+
+
+        bot.startConversation(message, start);
+
+
+
+    });
 
 }
 
