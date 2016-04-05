@@ -85,7 +85,7 @@ function hears(controller){
                     callback: function(response, convo) {
                         convo.say('Stopping play by play for the ' + team);
                         clearInterval(pbp);
-                        convo.next();
+                        convo.next(); 
                     }
                 },
                 {
